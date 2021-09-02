@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import Error from './components/Error'
+import Notification from './components/Notification'
 import Numbers from './components/Numbers'
 import Filter from './components/Filter'
 import Form from './components/Form'
@@ -9,6 +11,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setNewFilter ] = useState('')
+  const [ notification, setNotification ] = useState(null)
+  const [ error, setError ] = useState(null)
 
   useEffect(() => {
     personService
@@ -27,7 +31,21 @@ const App = () => {
       if(window.confirm(`Do you really want to update phone number for ${newName}?`)){
         personService
           .update(persons.find(person => person.name === newName).id, newPerson)
-          .then(data => setPersons(persons.map(person => person.name === newName ? data : person)))
+          .then(data => {
+            setNewName('')
+            setNewNumber('')
+            setPersons(persons.map(person => person.name === newName ? data : person))
+            setNotification(`Updated number for ${newName}`)
+            setTimeout(() => {
+              setNotification(null)
+            }, 5000)
+          })
+          .catch(() => {
+            setError(`Information of ${newName} has already been removed from the server`)
+            setTimeout(() => {
+              setError(null)
+            }, 5000)
+          })
       }
     } else 
     {
@@ -37,7 +55,12 @@ const App = () => {
           setPersons(persons.concat(data))
           setNewName('')
           setNewNumber('')
+          setNotification(`Added ${newName} to the phonebook`)
+          setTimeout(() => {
+            setNotification(null)
+          }, 5000)
         })
+        .catch(error => alert(`Error ${error} occured!`))
     }
   }
 
@@ -56,14 +79,21 @@ const App = () => {
       personService
       .deletePerson(id)
       .then(() => {
+        setNotification(`Deleted ${persons.find(person => person.id===id).name} from the phonebook`)
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
         setPersons(persons.filter(person => person.id !== id))
       })
+      .catch(error => alert(`Error ${error} occured!`))
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
+      <Error message={error} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new person</h3>
       <Form addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
