@@ -6,10 +6,7 @@ const Blog = require('../models/blog')
 
 beforeEach(async () => {
     await Blog.deleteMany({})
-
-    const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
-    const promiseArray = blogObjects.map(blog => blog.save())
-    await Promise.all(promiseArray)
+    await Blog.insertMany(helper.initialBlogs)
 })
 
 const api = supertest(app)
@@ -62,7 +59,7 @@ test('an HTTP POST request to the /api/blogs url successfully creates a new blog
 })
 
 describe('handling missing data in POST requests', () => {
-    
+
     test('missing value of likes is set to 0', async () => {
         const newBlog = {
             title: 'Using Docker for Deep Learning projects',
@@ -119,6 +116,39 @@ describe('handling missing data in POST requests', () => {
             .send(newBlog)
             .expect(400)
     })
+})
+
+test('successfully deleting a blog by id if id is valid', async () => {
+    const initial = await helper.blogsInDb()
+    const id = initial[0].id
+
+    await api
+        .delete(`/api/blogs/${id}`)
+        .expect(204)
+
+    const final = await helper.blogsInDb()
+    expect(final).toHaveLength(initial.length - 1)
+})
+
+test('successfully updated a blog by id', async () => {
+    const blogToUpdate = helper.initialBlogs[0]
+
+    const newBlog = {
+        title: blogToUpdate.title,
+        author: blogToUpdate.author,
+        url: blogToUpdate.url,
+        likes: 9
+    }
+
+    await api
+        .put(`/api/blogs/${blogToUpdate._id}`)
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+    const updated = await Blog.findById(blogToUpdate._id)
+    expect(updated.likes).toEqual(newBlog.likes)
+
 })
 
 afterAll(() => {
