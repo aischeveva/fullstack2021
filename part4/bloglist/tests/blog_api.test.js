@@ -3,9 +3,11 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
     await Blog.deleteMany({})
+    await User.deleteMany({})
     await Blog.insertMany(helper.initialBlogs)
 })
 
@@ -40,8 +42,19 @@ test('an HTTP POST request to the /api/blogs url successfully creates a new blog
         likes: 10
     }
 
+    const user = {
+        username: 'alena',
+        password: 'password',
+        name: 'Alena'
+    }
+
+    await api.post('/api/users').send(user).expect(201)
+    const login = await api.post('/api/login').send(user)
+    const token = login.body.token
+
     await api
         .post('/api/blogs')
+        .set({ 'Authorization': `bearer ${token}` })
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -66,9 +79,20 @@ describe('handling missing data in POST requests', () => {
             author: 'Margaux Masson-Forsythe',
             url: 'https://towardsdatascience.com/using-docker-for-deep-learning-projects-fa51d2c4f64c',
         }
+
+        const user = {
+            username: 'alena',
+            password: 'password',
+            name: 'Alena'
+        }
+    
+        await api.post('/api/users').send(user).expect(201)
+        const login = await api.post('/api/login').send(user)
+        const token = login.body.token
     
         await api
             .post('/api/blogs')
+            .set({ 'Authorization': `bearer ${token}` })
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -105,6 +129,7 @@ describe('handling missing data in POST requests', () => {
             .send(newBlog)
             .expect(400)
     })
+
     test('missing title and url leads to 400 Bad Request', async () => {
         const newBlog = {
             author: 'Margaux Masson-Forsythe',
@@ -116,19 +141,55 @@ describe('handling missing data in POST requests', () => {
             .send(newBlog)
             .expect(400)
     })
+
+    test('missing authorization heades leads to 401 Unauthorized', async () => {
+        const newBlog = {
+            title: 'Using Docker for Deep Learning projects',
+            author: 'Margaux Masson-Forsythe',
+            url: 'https://towardsdatascience.com/using-docker-for-deep-learning-projects-fa51d2c4f64c',
+            likes: 10
+        }
+    
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(401)
+    })
 })
 
 test('successfully deleting a blog by id if id is valid', async () => {
-    const initial = await helper.blogsInDb()
-    const id = initial[0].id
+    const user = {
+        username: 'alena',
+        password: 'password',
+        name: 'Alena'
+    }
+
+    const newBlog = {
+        title: 'Using Docker for Deep Learning projects',
+        author: 'Margaux Masson-Forsythe',
+        url: 'https://towardsdatascience.com/using-docker-for-deep-learning-projects-fa51d2c4f64c',
+        likes: 10,
+    }
+
+    await api.post('/api/users').send(user).expect(201)
+    const login = await api.post('/api/login').send(user)
+    const token = login.body.token
+
+    const result = await api
+        .post('/api/blogs')
+        .set({ 'Authorization': `bearer ${token}` })
+        .send(newBlog)
+        .expect(201)
 
     await api
-        .delete(`/api/blogs/${id}`)
+        .delete(`/api/blogs/${result.body.id}`)
+        .set({ 'Authorization': `bearer ${token}` })
         .expect(204)
 
     const final = await helper.blogsInDb()
-    expect(final).toHaveLength(initial.length - 1)
+    expect(final).toHaveLength(helper.initialBlogs.length)
 })
+
 
 test('successfully updated a blog by id', async () => {
     const blogToUpdate = helper.initialBlogs[0]

@@ -1,15 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
+//const User = require('../models/user')
 const jwt = require('jsonwebtoken')
-
-const getToken = request => {
-    const authorization = request.get('authorization')
-    if(authorization && authorization.toLowerCase().startsWith('bearer ')){
-        return authorization.substring(7)
-    }
-    return null
-}
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user', {username: 1, name: 1, id: 1})
@@ -21,13 +13,14 @@ blogsRouter.post('/', async (request, response) => {
 
     if (body.title === undefined || body.url === undefined) { response.status(400).end() }
 
-    const token = getToken(request)
+    const token = request.token
     const decodedToken = jwt.verify(token, process.env.SECRET)
     if(!token || !decodedToken.id){
+        console.log('are we inside?')
         return response.status(401).json({error: 'token missing or invalid'})
     }
 
-    const user = await User.findById(decodedToken.id)
+    const user = request.user
     
     const blog = new Blog({
         title: body.title,
@@ -45,8 +38,23 @@ blogsRouter.post('/', async (request, response) => {
 
 
 blogsRouter.delete('/:id', async(request, response) => {
-    await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
+    const token = request.token === null ? 0 : request.token
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if(!token || !decodedToken.id){
+        return response.status(401).json({error: 'token missing or invalid'})
+    }
+
+    const blog = await Blog.findById(request.params.id)
+
+    if(blog.user.toString() === decodedToken.id.toString()){
+        const user = request.user
+        user.blogs = user.blogs.filter(b => b.toString() != blog._id.toString())
+        await user.save()
+        await blog.remove()
+        response.status(204).end()
+    } else {
+        response.status(401).json({ error: 'user does not have access to the blog' }).end()
+    }
 })
 
 blogsRouter.put('/:id', async(request, response) => {

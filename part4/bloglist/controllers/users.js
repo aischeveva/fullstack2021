@@ -10,7 +10,6 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
     const body = request.body
-    console.log(body)
 
     if(body.password === undefined || body.password.length < 3) response.status(500).json({ error: 'password is missing or shorter than 3 symbols' })
 
