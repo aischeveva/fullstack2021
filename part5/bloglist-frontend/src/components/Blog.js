@@ -41,7 +41,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
             <div style={showWhenVisible} className="expandedBlog">
                 <p>{blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button> </p>
                 <p>{blog.url}</p>
-                <p>likes {blog.likes} <button onClick={like}>like</button></p>
+                <p className="likes" >likes {blog.likes} <button onClick={like}>like</button></p>
                 <p>{blog.user.name}</p>
                 {blog.user.username !== user.username ? null : <button onClick={deleteObject}>remove</button>}
             </div>

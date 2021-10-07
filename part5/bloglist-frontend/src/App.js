@@ -5,6 +5,7 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Toggleable from './components/Toggleable'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
@@ -99,15 +100,7 @@ const App = () => {
         <div>
             <h2>log in to application</h2>
             <Notification notification={notification} />
-            <form onSubmit={handleLogin}>
-                <div>
-                username <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)} />
-                </div>
-                <div>
-                password <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)} />
-                </div>
-                <button type="submit">login</button>
-            </form>
+            <LoginForm username={username} password={password} handleUsernameChange={({ target }) => setUsername(target.value)} handlePasswordChange={({ target }) => setPassword(target.value)} handleSubmit={handleLogin} />
         </div>
     )
 
