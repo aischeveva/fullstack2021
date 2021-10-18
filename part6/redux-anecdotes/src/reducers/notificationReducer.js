@@ -1,3 +1,5 @@
+let timeoutID
+
 const reducer = (state = '', action) => {
     switch(action.type){
         case 'SET':
@@ -11,12 +13,15 @@ const reducer = (state = '', action) => {
 
 export const setNotification = (notification, time) => {
     return dispatch => {
+        if (timeoutID !== undefined){
+            clearTimeout(timeoutID)
+        }
         dispatch({
             type: 'SET',
             data: { notification }
         })
-        
-        setTimeout(() => {
+
+        timeoutID = setTimeout(() => {
             dispatch(removeNotification())
         }, time*1000)
     }
