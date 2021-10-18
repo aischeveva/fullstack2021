@@ -1,6 +1,4 @@
 const reducer = (state = '', action) => {
-    console.log('state now: ', state)
-    console.log('action', action)
     switch(action.type){
         case 'SET':
             return action.data.notification
@@ -11,10 +9,16 @@ const reducer = (state = '', action) => {
     }
 }
 
-export const setNotification = (notification) => {
-    return {
-        type: 'SET',
-        data: { notification }
+export const setNotification = (notification, time) => {
+    return dispatch => {
+        dispatch({
+            type: 'SET',
+            data: { notification }
+        })
+        
+        setTimeout(() => {
+            dispatch(removeNotification())
+        }, time*1000)
     }
 }
 
