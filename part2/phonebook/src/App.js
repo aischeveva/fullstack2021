@@ -19,7 +19,8 @@ const App = () => {
       .getAll()
       .then(data => {setPersons(data)})
   }, [])
-  const personsToShow = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+
+  const personsToShow = persons.filter(person => person !== null && person.name.toLowerCase().includes(filter.toLowerCase()))
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -40,8 +41,8 @@ const App = () => {
               setNotification(null)
             }, 5000)
           })
-          .catch(() => {
-            setError(`Information of ${newName} has already been removed from the server`)
+          .catch(error => {
+            setError(error.response.data.error)
             setTimeout(() => {
               setError(null)
             }, 5000)
@@ -60,7 +61,12 @@ const App = () => {
             setNotification(null)
           }, 5000)
         })
-        .catch(error => alert(`Error ${error} occured!`))
+        .catch(error => {
+          setError(error.response.data.error)
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
+        })
     }
   }
 
@@ -85,7 +91,12 @@ const App = () => {
         }, 5000)
         setPersons(persons.filter(person => person.id !== id))
       })
-      .catch(error => alert(`Error ${error} occured!`))
+      .catch(error => {
+        setError(error.response.data.error)
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
+      })
     }
   }
 
