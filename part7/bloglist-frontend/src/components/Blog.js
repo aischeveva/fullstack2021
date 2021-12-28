@@ -1,27 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
 import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
+import { useParams } from 'react-router-dom'
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ user }) => {
+    const id = useParams().id
+    const blog = useSelector(state => state.blogs.find(b => b.id === id))
     const dispatch = useDispatch()
-    const [visible, setVisible] = useState(false)
-
-    const hideWhenVisible = { display: visible ? 'none' : '' }
-    const showWhenVisible = { display: visible ? '' : 'none' }
-
-    const toggleVisibility = () => {
-        setVisible(!visible)
-    }
-
-    const blogStyle = {
-        paddingTop: 10,
-        paddingLeft: 2,
-        border: 'solid',
-        borderWidth: 1,
-        marginBottom: 5
-    }
 
     const like = (event) => {
         event.preventDefault()
@@ -38,23 +25,17 @@ const Blog = ({ blog, user }) => {
     }
 
     return (
-        <div style={blogStyle}>
-            <div style={hideWhenVisible} className="collapsedBlog">
-                {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
-            </div>
-            <div style={showWhenVisible} className="expandedBlog">
-                <p>{blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button> </p>
-                <p>{blog.url}</p>
-                <p className="likes" >likes {blog.likes} <button onClick={like}>like</button></p>
-                <p>{blog.user.name}</p>
-                {blog.user.username !== user.username ? null : <button onClick={deleteObject}>remove</button>}
-            </div>
+        <div>
+            <h1>{ blog.title } { blog.author }</h1>
+            <p>{blog.url}</p>
+            <p className="likes" >likes {blog.likes} <button onClick={like}>like</button></p>
+            <p>added by {blog.user.name}</p>
+            {blog.user.username !== user.username ? null : <button onClick={deleteObject}>remove</button>}
         </div>
     )
 }
 
 Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
 }
 

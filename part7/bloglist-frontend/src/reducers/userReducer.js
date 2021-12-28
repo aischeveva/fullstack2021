@@ -1,25 +1,29 @@
 import loginService from '../services/login'
 import blogService from '../services/blogs'
+import userService from '../services/users'
 import { setNotification } from './notificationReducer'
 
 const initialState = {
     username: '',
     password: '',
-    user: null
+    user: null,
+    users: []
 }
 
 const reducer = (state = initialState, action) => {
     switch(action.type){
         case 'UPDATE_NAME':
-            return {...state, username: action.data}
+            return { ...state, username: action.data}
         case 'UPDATE_PASS':
-            return {...state, password: action.data}
+            return { ...state, password: action.data}
         case 'LOGIN':
-            return { username: '', password: '', user: action.data }
+            return { ...state, username: '', password: '', user: action.data }
         case 'LOGOUT':
             return initialState
         case 'SET_USER':
-            return { username: '', password: '', user: action.data }
+            return { ...state, username: '', password: '', user: action.data }
+        case 'INIT_USERS':
+            return { ...state, users: action.data }
         default:
             return state
     }
@@ -79,6 +83,16 @@ export const setUser = (loggedUserJSON) => {
         dispatch({
             type: 'SET_USER',
             data: loggedUser
+        })
+    }
+}
+
+export const initializeUsers = () => {
+    return async dispatch => {
+        const users = await userService.getAll()
+        dispatch({
+            type: 'INIT_USERS',
+            data: users
         })
     }
 }

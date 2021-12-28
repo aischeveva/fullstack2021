@@ -6,7 +6,7 @@
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 10px;
-  }  
+}  
   
 .success {
     color: green;
@@ -16,4 +16,17 @@
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 10px;
-}  
+} 
+
+.blog-link {
+  border-style: solid;
+  border-radius: 1px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 5px;
+}
+
+.navbar {
+  background-color: lightgray;
+  margin-bottom: 5px;
+}
