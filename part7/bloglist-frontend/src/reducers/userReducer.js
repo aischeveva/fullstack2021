@@ -4,18 +4,12 @@ import userService from '../services/users'
 import { setNotification } from './notificationReducer'
 
 const initialState = {
-    username: '',
-    password: '',
     user: null,
     users: []
 }
 
 const reducer = (state = initialState, action) => {
     switch(action.type){
-        case 'UPDATE_NAME':
-            return { ...state, username: action.data}
-        case 'UPDATE_PASS':
-            return { ...state, password: action.data}
         case 'LOGIN':
             return { ...state, username: '', password: '', user: action.data }
         case 'LOGOUT':
@@ -26,24 +20,6 @@ const reducer = (state = initialState, action) => {
             return { ...state, users: action.data }
         default:
             return state
-    }
-}
-
-export const updateUsername = (username) => {
-    return async dispatch => {
-        dispatch({
-            type: 'UPDATE_NAME',
-            data: username
-        })
-    }
-}
-
-export const updatePassword = (password) => {
-    return async dispatch => {
-        dispatch({
-            type: 'UPDATE_PASS',
-            data: password
-        })
     }
 }
 

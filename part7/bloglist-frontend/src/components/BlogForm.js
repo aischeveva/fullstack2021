@@ -1,43 +1,36 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useDispatch } from 'react-redux'
 import { addBlog } from '../reducers/blogsReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Button, Form } from 'react-bootstrap'
 
 const BlogForm = () => {
     const dispatch = useDispatch()
-    const [title, setTitle] = useState('')
-    const [author, setAuthor] = useState('')
-    const [url, setUrl] = useState('')
 
     const createBlog = (event) => {
         event.preventDefault()
         dispatch(addBlog({
-            title: title,
-            author: author,
-            url: url
+            title: event.target.title.value,
+            author: event.target.author.value,
+            url: event.target.url.value
         }))
-        dispatch(setNotification({ message: `a new blog ${title} by ${author} added`, type: 'success' }, 5))
-
-        setTitle('')
-        setAuthor('')
-        setUrl('')
+        dispatch(setNotification({ message: `a new blog ${event.target.title.value} by ${event.target.author.value} added`, type: 'success' }, 5))
     }
 
     return (
         <div className="blogForm">
             <h2>create new</h2>
-            <form onSubmit={createBlog}>
-                <div>
-                    title: <input id="title" type="text" value={title} name="Title" onChange={({ target }) => setTitle(target.value)} />
-                </div>
-                <div>
-                    author: <input id="author" type="text" value={author} name="Author" onChange={({ target }) => setAuthor(target.value)} />
-                </div>
-                <div>
-                    url: <input id="url" type="text" value={url} name="URL" onChange={({ target }) => setUrl(target.value)} />
-                </div>
-                <button id="new-blog-button" type="submit">create</button>
-            </form>
+            <Form onSubmit={createBlog}>
+                <Form.Group>
+                    <Form.Label>title:</Form.Label>
+                    <Form.Control type="text" name="title"></Form.Control>
+                    <Form.Label>author:</Form.Label>
+                    <Form.Control type="text" name="author"></Form.Control>
+                    <Form.Label>url:</Form.Label>
+                    <Form.Control type="text" name="url"></Form.Control>
+                    <Button variant="primary" type="submit">create</Button>
+                </Form.Group>
+            </Form>
         </div>
     )
 }

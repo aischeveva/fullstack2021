@@ -93,7 +93,7 @@ const App = () => {
     )
 
     return (
-        <div>
+        <div className="container">
             {user === null && loginForm()}
             {user !== null && routerPart()}
         </div>

@@ -1,25 +1,28 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useDispatch } from 'react-redux'
 import { addComment } from '../reducers/blogsReducer'
+import { Form, Button, InputGroup } from 'react-bootstrap'
 
 
 const Comments = ({ comments, id }) => {
     const dispatch = useDispatch()
-    const [comment, setComment] = useState('')
 
     const handleComment = (event) => {
         event.preventDefault()
-        dispatch(addComment(id, comment))
-        setComment('')
+        dispatch(addComment(id, event.target.comment.value))
     }
 
     return (
         <div>
             <h3>Comments</h3>
-            <form onSubmit={ handleComment }>
-                <input id="comment" type="text" value={ comment } onChange={({ target }) => setComment(target.value)}></input>
-                <button id="submit-button" type="submit">add comment</button>
-            </form>
+            <Form onSubmit={ handleComment }>
+                <Form.Group>
+                    <InputGroup>
+                        <Form.Control type="text" name="comment" />
+                        <Button type="submit">add comment</Button>
+                    </InputGroup>
+                </Form.Group>
+            </Form>
             <ul>
                 { comments.map((comment, idx) => (
                     <li key={ idx }>{ comment }</li>

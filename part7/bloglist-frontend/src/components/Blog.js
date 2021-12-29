@@ -5,6 +5,7 @@ import { setNotification } from '../reducers/notificationReducer'
 import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
 import { useParams } from 'react-router-dom'
 import Comments from './Comments'
+import { Button } from 'react-bootstrap'
 
 const Blog = ({ user }) => {
     const id = useParams().id
@@ -32,10 +33,10 @@ const Blog = ({ user }) => {
     return (
         <div>
             <h1>{ blog.title } { blog.author }</h1>
-            <p>{blog.url}</p>
-            <p className="likes" >likes {blog.likes} <button onClick={like}>like</button></p>
+            <a href={blog.url}>{blog.url}</a>
+            <p className="likes" >likes {blog.likes} <Button onClick={like}>like</Button></p>
             <p>added by {blog.user.name}</p>
-            {blog.user.username !== user.username ? null : <button onClick={deleteObject}>remove</button>}
+            {blog.user.username !== user.username ? null : <Button onClick={deleteObject}>remove</Button>}
             <Comments comments={ blog.comments } id={ blog.id } />
         </div>
     )
