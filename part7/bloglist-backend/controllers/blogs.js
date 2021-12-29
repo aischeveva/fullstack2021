@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const { response } = require('express')
 const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
@@ -55,6 +56,10 @@ router.post('/', async (request, response) => {
     blog.likes = 0
   }
 
+  if (!blog.comments) {
+    blog.comments = []
+  }
+
   blog.user = user
   const savedBlog = await blog.save()
 
@@ -62,6 +67,17 @@ router.post('/', async (request, response) => {
   await user.save()
 
   response.status(201).json(savedBlog)
+})
+
+router.post('/:id/comments', async (request, response) => {
+  const comment = request.body.comment
+  const id = request.params.id
+
+  const blog = await Blog.findById(id)
+  blog.comments = [...blog.comments, comment]
+  const updatedBlog = await Blog.findByIdAndUpdate(id, blog, { new: true }).populate('user', { username: 1, name: 1 })
+  
+  response.json(updatedBlog.toJSON())
 })
 
 module.exports = router

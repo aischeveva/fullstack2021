@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
 import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
 import { useParams } from 'react-router-dom'
+import Comments from './Comments'
 
 const Blog = ({ user }) => {
     const id = useParams().id
@@ -24,6 +25,10 @@ const Blog = ({ user }) => {
         }
     }
 
+    if(!blog) {
+        return null
+    }
+
     return (
         <div>
             <h1>{ blog.title } { blog.author }</h1>
@@ -31,6 +36,7 @@ const Blog = ({ user }) => {
             <p className="likes" >likes {blog.likes} <button onClick={like}>like</button></p>
             <p>added by {blog.user.name}</p>
             {blog.user.username !== user.username ? null : <button onClick={deleteObject}>remove</button>}
+            <Comments comments={ blog.comments } id={ blog.id } />
         </div>
     )
 }
