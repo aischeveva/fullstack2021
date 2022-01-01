@@ -119,6 +119,10 @@ const typeDefs = gql`
 `
 
 const resolvers = {
+  Author: {
+    bookCount: (root) => books.filter(book => book.author === root.name).length
+  },
+
   Query: {
     bookCount: () => books.length,
     authorCount: () => new Set(books.map(book => book.author)).size,
@@ -152,7 +156,7 @@ const resolvers = {
       if(!author) {
         return null
       }
-      authors.map(a => a.name === args.name ? {...author, born: args.setBornTo} : a)
+      authors = authors.map(a => a.name === args.name ? {...author, born: args.setBornTo} : a)
       return {...author, born: args.setBornTo}
     }
   }
