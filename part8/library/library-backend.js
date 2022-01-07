@@ -164,6 +164,12 @@ const typeDefs = gql`
 `
 
 const resolvers = {
+  Book: {
+    author: async (root) => {
+      const book = await Book.findById(root.id)
+      return await Author.findById(book.author)
+    }
+  },
   Author: {
     bookCount: async (root) => {
       return await Book.countDocuments({ author: root.id })
