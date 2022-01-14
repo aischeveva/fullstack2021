@@ -1,30 +1,30 @@
-import React from 'react'
-import { ALL_BOOKS } from '../queries'
-import { useQuery } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { ALL_BOOKS, ALL_GENRES } from '../queries'
+import { useLazyQuery, useQuery } from '@apollo/client'
 
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
+  const bookGenres = useQuery(ALL_GENRES)
+  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+  const [books, setBooks] = useState([])
+
   const pageTitle = props.recommend ? 'recommendations' : 'books'
 
-  if (!props.show || result.loading) {
+  useEffect(() => {
+    const genre = props.genre === '' ? null : props.genre
+    getBooks({ variables: { genre: genre } })
+  }, [props.genre, getBooks])
+
+  useEffect(() => {
+    if(result.data) {
+      setBooks(result.data.allBooks)
+    }
+  }, [result])
+
+  if (!props.show || result.loading || bookGenres.loading) {
     return null
   }
 
-  const books = result.data.allBooks
-
-  let genres = []
-  books.forEach(book => {
-    book.genres.forEach(genre => {
-      if(!genres.includes(genre)){
-        genres = genres.concat(genre)
-      }
-    })
-  })
-
-  let filteredBooks = books
-  if(props.genre !== ''){
-    filteredBooks = books.filter(b => b.genres.includes(props.genre))
-  }
+  const genres = bookGenres.data.allGenres
 
   return (
     <div>
@@ -42,7 +42,7 @@ const Books = (props) => {
               published
             </th>
           </tr>
-          {filteredBooks.map(b =>
+          {books.map(b =>
             <tr key={b.title}>
               <td>{b.title}</td>
               <td>{b.author.name}</td>

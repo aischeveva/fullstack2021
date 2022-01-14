@@ -18,7 +18,7 @@ const LoginForm = ({ show, setToken, setPage }) => {
             setToken(token)
             localStorage.setItem('library-user-token', token)
         }
-    }, [result.data])
+    }, [result.data, setToken])
 
     if (!show || result.loading) {
         return null

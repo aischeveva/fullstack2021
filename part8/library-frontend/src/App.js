@@ -17,11 +17,14 @@ const App = () => {
     const includedIn = (set, object) => 
       set.map(p => p.title).includes(object.title)  
 
-    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    const dataInStore = client.readQuery({ query: ALL_BOOKS, variables: { genre: genre === '' ? null : genre } })
     if (!includedIn(dataInStore.allBooks, addedBook)) {
       console.log('updating cache')
       client.writeQuery({
         query: ALL_BOOKS,
+        variables: {
+          genre: genre === '' ? null : genre
+        },
         data: { allBooks: dataInStore.allBooks.concat(addedBook) }
       })
     }   
@@ -83,6 +86,7 @@ const App = () => {
         recommend={recommend}
         genre={genre}
         setGenre={setGenre}
+        client={client}
       />
 
       <NewBook
