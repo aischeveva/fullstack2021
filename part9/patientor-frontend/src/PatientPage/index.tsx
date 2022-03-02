@@ -5,6 +5,7 @@ import axios from "axios";
 import { apiBaseUrl } from "../constants";
 import { Patient } from "../types";
 import { Container, Icon } from "semantic-ui-react";
+import EntryDetails from "./EntryDetails";
 
 const PatientPage = () => {
     const [{ patients }, dispatch] = useStateValue();
@@ -36,6 +37,8 @@ const PatientPage = () => {
           <h3>{patient?.name} <Icon name={icon} /></h3>
           <p>ssn: {patient?.ssn}</p>
           <p>occupation: {patient?.occupation}</p>
+          <h4>entries</h4>
+          {patient?.entries.map(entry => (<EntryDetails key={entry.id} entry={entry} />))}
         </Container>);
 
 
