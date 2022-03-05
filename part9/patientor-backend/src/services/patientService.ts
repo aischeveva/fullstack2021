@@ -1,9 +1,9 @@
 import patients from '../../data/patients';
-import { NewPatient, PublicPatient, Patient } from '../types';
+import { NewPatient, PublicPatient, Patient, Entry, NewEntry } from '../types';
 import {v1 as uuid} from 'uuid';
-import toNewPatient from '../utils';
+import { toNewPatient } from '../utils';
 
-const patientsData: Patient[] = patients.map(obj => {
+let patientsData: Patient[] = patients.map(obj => {
     const object = toNewPatient(obj) as Patient;
     object.id = obj.id;
     object.entries = obj.entries;
@@ -36,9 +36,25 @@ const addPatient = ( patient: NewPatient): Patient => {
     return newPatient;
 };
 
+const addEntry = ( patient_id: string, entry: NewEntry): Entry => {
+    const id: string = uuid();
+    const newEntry: Entry = {
+        id: id,
+        ...entry
+    };
+
+    patientsData = patientsData.map(patient => {
+        if(patient.id === patient_id) return {...patient, entries: [...patient.entries, newEntry]};
+        else return patient;
+    });
+    
+    return newEntry;
+};
+
 
 export default {
     getPatients,
     getPatientsNonSensitive,
-    addPatient
+    addPatient,
+    addEntry
   };
