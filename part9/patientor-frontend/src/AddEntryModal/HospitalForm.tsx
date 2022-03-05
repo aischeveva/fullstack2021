@@ -46,7 +46,13 @@ const HospitalForm = ({diagnosis, typeOptions, isValid, dirty, setFieldValue, se
     <Field
       label="Discharge date"
       placeholder="YYYY-MM-DD"
-      name="discharge_date"
+      name="discharge.date"
+      component={TextField}
+    />
+    <Field
+      label="Discharge criteria"
+      placeholder="Criteria"
+      name="discharge.criteria"
       component={TextField}
     />
     <DiagnosisSelection 
