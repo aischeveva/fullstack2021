@@ -1,4 +1,4 @@
-import { Gender, NewPatient, NewEntry, HealthCheckRating, SickLeave, Discharge } from './types';
+import { Gender, NewPatient, NewEntry, HealthCheckRating } from './types';
 
 const isString = (text: unknown): text is string => {
     return typeof text === 'string' || text instanceof String;
@@ -121,27 +121,27 @@ const parseEmployerName = (employerName: unknown): string => {
     return employerName;
 };
 
-const parseSickLeave = (sickLeave: unknown): SickLeave => {
+const parseSickLeave = (sickLeave: unknown): { startDate: string, endDate: string } => {
     if (!sickLeave || !(typeof sickLeave === 'object') 
     || !('startDate' in sickLeave) || !('endDate' in sickLeave) ) {
         throw new Error('Incorrect or missing sick leave: ' + sickLeave);
     }
 
-    return sickLeave as SickLeave;
+    return sickLeave as { startDate: string, endDate: string };
 }; 
 
-const parseDischarge = (discharge: unknown): Discharge => {
+const parseDischarge = (discharge: unknown): { date: string, criteria: string } => {
     if (!discharge || !(typeof discharge === 'object') 
     || !('date' in discharge) || !('criteria' in discharge) ) {
         throw new Error('Incorrect or missing discharge: ' + discharge);
     }
 
-    return discharge as Discharge;
+    return discharge as { date: string, criteria: string };
 }; 
 
 type EntryFields = { type: unknown, description: unknown, date: unknown, 
     specialist: unknown, diagnosisCodes?: unknown, healthCheckRating?: unknown, 
-    employerName?: unknown, sickLeave?: unknown, discharge?: Discharge};
+    employerName?: unknown, sickLeave?: unknown, discharge?: unknown};
 
 
 export const toNewEntry = (props: EntryFields): NewEntry => {

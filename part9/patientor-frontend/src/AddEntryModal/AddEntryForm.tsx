@@ -2,9 +2,8 @@ import React from "react";
 import { Grid, Button } from "semantic-ui-react";
 import { Field, Formik, Form } from "formik";
 
-import { TextField, SelectField, TypeOption, NumberField } from "./FormField";
+import { TextField, SelectField, TypeOption, NumberField, DiagnosisSelection } from "./FormField";
 import { HealthCheckEntry } from "../types";
-import { DiagnosisSelection } from "../AddPatientModal/FormField";
 import { useStateValue } from "../state";
 
 
